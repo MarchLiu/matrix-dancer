@@ -196,19 +196,17 @@ void dim_reduce(const double *input, int len, double *output, int reduce_to) {
     top_k_indexes(edges, len - 1, breaks, breaks_k, TOP_K_MAX);
     int start = 0;
     for (int i = 0; i < breaks_k; i++) {
-        int stop = breaks[i];
-        if(start == stop){
-            continue;
-        }
+        int stop = breaks[i] + 1;
         double value = rate * norm_of_range(input, start, stop);
         output[i] = value;
         start = stop;
     }
-    start = breaks[breaks_k];
-    int stop = len - 1;
-    double value = rate * norm_of_range(input, start, stop);
-    output[breaks_k] = value;
-
+    if (start < len - 1) {
+        start = breaks[breaks_k];
+        int stop = len - 1;
+        double value = rate * norm_of_range(input, start, stop);
+        output[breaks_k] = value;
+    }
     free(breaks);
     free(edges);
 }
